@@ -1,31 +1,32 @@
 import java.util.Scanner;
 import java.util.Vector;
+//pake scanner sama vector
 
 public class Main {
 
+	//deklarasi
 	Scanner scan = new Scanner(System.in);
 	int num=0; int menu;
 	Vector <String> namaVector = new Vector<>();
-	Vector <String> kodeVector = new Vector<>();
+	Vector <String> kodeVector = new Vector<>(); //buat nampung kode di-sort yg bakal di view
+	Vector <String> code = new Vector<>(); //nampung kode berdasarkan yg pertama datang
 	Vector <String> genderVector = new Vector<>();
 	Vector <String> jabatanVector = new Vector<>();
 	Vector <Double> gajiVector = new Vector<>();
-	Vector <String> code = new Vector<>();
-	Vector <String> kodetemp = new Vector<>();
-	
+	Karyawan k = new Karyawan ();
 	
 	public Main () {
-		mainMenu();
+		mainMenu(); //ke method mainMenu
 	}
 	
 	
 	public static void main(String[] args) {
-		new Main();
+		new Main(); //jalan di constructor main
 
 	}
 	
-	
-	private void mainMenu() {
+	//menu utama buat pilih"
+	public void mainMenu() {
 		do {
 			System.out.println("Data Karyawan PT Musang");
 			System.out.println("=======================");
@@ -38,7 +39,7 @@ public class Main {
 			do {
 				System.out.print("Input: ");
 				menu=scan.nextInt();
-			} while (menu!=1 && menu!=2 && menu!=3 && menu!=4 && menu!=5);
+			} while (menu!=1 && menu!=2 && menu!=3 && menu!=4 && menu!=5); //validasi
 			scan.nextLine();
 			
 			switch (menu) {
@@ -58,59 +59,54 @@ public class Main {
 				break;
 			}
 			System.out.println("ENTER to return");
-			scan.nextLine();
+			scan.nextLine(); //biar bisa scan enternya
 			System.out.println();
-		} while (menu!=5);
+		} while (menu!=5); //kalo pencet 5, sistem selesai
 	}
 	
 	
 	
 	private void insert () {
+		//input nama, gender sama jabatan
 		String nama; String gender; String jabatan;
 		do {
-			System.out.print("Input nama karyawan: [>= 3]: ");
-			nama = scan.nextLine();
+			nama = k.scanNama();
 		} while (nama.length()<3);
+		
 		namaVector.add(nama);
 		
 		do {
-			System.out.print("Input jenis kelamin [Laki-laki | Perempuan] (Case Sensitive): ");
-			gender = scan.nextLine();
+			gender = k.scanGender();
 		} while (gender.compareTo("Laki-laki")!=0 && gender.compareTo("Perempuan")!=0);
+		
 		genderVector.add(gender);
 		
 		do {
-			System.out.print("Input jabatan [Manager | Supervisor | Admin] (Case Sensitive): ");
-			jabatan = scan.next(); scan.nextLine();
+			jabatan = k.scanJabatan();
 		} while (jabatan.compareTo("Manager")!=0 && jabatan.compareTo("Supervisor")!=0 && jabatan.compareTo("Admin")!=0);
+		
 		jabatanVector.add(jabatan);
 		
+		//cari kode ke method random()
 		String string = random();
 		for (int i=0; i<num; i++) {
-			while (kodeVector.get(i)==string) {
+			while (kodeVector.get(i)==string) { //validasi kalo kode harus unik
 				string = random();
 			}
 		}
 		kodeVector.add(string);
 		code.add(string);
+		
 		System.out.println("Berhasil menambahkan karyawan dengan id " + string);
 		num++;
 		
-		if (jabatan.equals("Manager")) {
-			add(8000000, 110, "Manager", num);
-		}
-		else if (jabatan.equals("Supervisor")) {
-			add(6000000, 107.5, "Supervisor", num);
-		}
-		else if (jabatan.equals("Admin")) {
-			add(4000000, 105, "Admin", num);
-		}
+		k.checkJabatan(num, gajiVector, menu, num, kodeVector, code, jabatanVector); //tambah gaji
 	}
 	
 	
 	
 	private void view () {
-		if (num==0) {
+		if (num==0) { //kalau ga ada karyawan
 			System.out.println("No data found");
 		}
 		else {
@@ -133,60 +129,56 @@ public class Main {
 	
 	
 	private void update() {
-		int idx; String nama; String gender; String jabatan;
-		if (num==0) {
+		int idx; 
+		String nama; String gender; String jabatan;
+		if (num==0) { //kalau ga ada karyawan
 			System.out.println("There are no data to be updated");
 			return;
 		}
+		//kalau ada karyawan, input nomor, nama, gender, jabatan, dan di-update
 		do {
 			System.out.print("Input nomor karyawan yang ingin diupdate: ");
 			idx = scan.nextInt(); scan.nextLine();
 		} while (idx<1 || idx>num);
 		
-			do {
-				System.out.print("Input nama karyawan: [>= 3]: ");
-				nama = scan.nextLine();
-			} while (nama.length()<3 && nama.compareTo("0")!=0);
-			if (nama.compareTo("0")!=0) {
-				namaVector.set(idx-1, nama);
-			}
-			
-			do {
-				System.out.print("Input jenis kelamin [Laki-laki | Perempuan] (Case Sensitive): ");
-				gender = scan.nextLine();
-			} while (gender.compareTo("Laki-laki")!=0 && gender.compareTo("Perempuan")!=0 && gender.compareTo("0")!=0);
-			if (gender.compareTo("0")!=0) {
-				genderVector.set(idx-1, gender);
-			}
-			
-			do {
-				System.out.print("Input jabatan [Manager | Supervisor | Admin] (Case Sensitive): ");
-				jabatan = scan.nextLine();
-			} while (jabatan.compareTo("Manager")!=0 && jabatan.compareTo("Supervisor")!=0 && jabatan.compareTo("Admin")!=0 && jabatan.compareTo("0")!=0);
-			if (jabatan.compareTo("0")!=0) {
-				jabatanVector.set(idx-1, jabatan);
-				if (jabatan.equals("Manager")) {
-					add(8000000, 110, "Manager", idx);
-				}
-				else if (jabatan.equals("Supervisor")) {
-					add(6000000, 107.5, "Supervisor", idx);
-				}
-				else if (jabatan.equals("Admin")) {
-					add(4000000, 105, "Admin", idx);
-				}
-			}
-			
-			System.out.println("Berhasil mengupdate karyawan dengan id " + kodeVector.get(idx-1));
+		do {
+			nama = k.scanNama();
+		} while (nama.length()<3 && nama.compareTo("0")!=0);
+		
+		if (nama.compareTo("0")!=0) {
+			namaVector.set(idx-1, nama);
+		}
+		
+		do {
+			gender = k.scanGender();
+		} while (gender.compareTo("Laki-laki")!=0 && gender.compareTo("Perempuan")!=0 && gender.compareTo("0")!=0);
+		
+		if (gender.compareTo("0")!=0) {
+			genderVector.set(idx-1, gender);
+		}
+		
+		do {
+			jabatan = k.scanJabatan();
+		} while (jabatan.compareTo("Manager")!=0 && jabatan.compareTo("Supervisor")!=0 && jabatan.compareTo("Admin")!=0 && jabatan.compareTo("0")!=0);
+		
+		
+		if (jabatan.compareTo("0")!=0) {
+			jabatanVector.set(idx-1, jabatan);
+			k.checkJabatan(idx, gajiVector, menu, num, kodeVector, code, jabatanVector); //update gaji
+		}
+		
+		System.out.println("Berhasil mengupdate karyawan dengan id " + kodeVector.get(idx-1));
 	}
 	
 	
 	
 	private void delete() {
 		int idx; String kode;
-		if (num==0) {
+		if (num==0) { //kalau ga ada karyawan
 			System.out.println("There are no data to be deleted");
 			return;
 		}
+		//kalau ada karyawan, hapus data indexnya di vector
 		do {
 			System.out.print("Input nomor urutan karyawan yang ingin dihapus: ");
 			idx = scan.nextInt();
@@ -204,7 +196,7 @@ public class Main {
 	}
 	
 	
-	private String random () {
+	private String random () { //method random dari insert() buat cari kode random
 		char [] arr = new char [7]; 
 		for (int i=0; i<2; i++) {
 			arr[i] = (char)(('A')+(Math.random()*('Z'-'A'+1)));
@@ -219,52 +211,7 @@ public class Main {
 	
 	
 	
-	private void add(double value, double bonus, String jabatan, int idx) {
-		int jumlah = 0;
-		if (menu==1) {
-			gajiVector.add(value);
-		}
-		else {
-			gajiVector.set(idx-1, value);
-		}
-		for (int i=0; i<num; i++) {
-				for (int j=0; j<num; j++) {
-					if (code.get(i)==kodeVector.get(j)) {
-						if (jabatanVector.get(j).equals(jabatan)) {
-							jumlah++;
-							kodetemp.add(code.get(i));
-							break;
-						}
-					}
-				}
-		}
-		
-		if (menu==1) {
-			if (jumlah%3==1 && jumlah>3) {
-				System.out.print("Bonus sebesar " + (bonus-100) + "% telah diberikan kepada karyawan dengan id ");
-				for (int i=0; i<jumlah-1; i++) {
-					if (i==jumlah-2) {
-						System.out.println(kodetemp.get(i));
-					}
-					else {
-						System.out.print(kodetemp.get(i) + ", ");
-					}
-
-					for (int j=0; j<num; j++) {
-						if (kodeVector.get(j)==kodetemp.get(i)) {
-							gajiVector.set(j, gajiVector.get(j)*bonus/100);
-							break;
-						}
-					}
-				}
-			}
-		}
-		kodetemp.removeAllElements();
-	}
-	
-	
-	
-	private void sort() {
+	private void sort() { //method sort dari view() buat urutin berdasarkan abjad
 		for (int i=0; i<num; i++) {
 			for (int j=0; j<num-i-1; j++) {
 				if (namaVector.get(j).compareTo(namaVector.get(j+1))>0) {
